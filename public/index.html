@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Hi, Welcome to the Izesan School!" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>Izesan School</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+      integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+      integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.lordicon.com/ritcuqlt.js"></script>
+
+    <script>
+      function counterFunction(minutes, stop = false) {
+        let intervalId = null; // Initialize intervalId to null
+
+        // Check if there is an active interval and clear it if stop is not true
+        const storedIntervalId = localStorage.getItem("intervalId");
+        if (storedIntervalId && !stop) {
+          clearInterval(parseInt(storedIntervalId));
+        }
+
+        if (stop) {
+          clearInterval(parseInt(storedIntervalId)); // Stop the interval if the "stop" parameter is present
+          localStorage.removeItem("counter");
+          localStorage.removeItem("startTime");
+          localStorage.removeItem("currentLocal");
+          localStorage.setItem("allow", true);
+          return;
+        }
+
+        let allow = false;
+        const storedAllow = localStorage.getItem("allow");
+        if (storedAllow === "true") {
+          allow = true;
+        }
+        localStorage.setItem("allow", false);
+        let count = minutes * 60; // Convert minutes to seconds
+
+        const storedCounter = localStorage.getItem("counter");
+        if (storedCounter) {
+          const [storedMinutes, storedSeconds] = storedCounter.split(":");
+          count =
+            parseInt(storedMinutes, 10) * 60 + parseInt(storedSeconds, 10);
+        }
+
+        const storedStartTime = localStorage.getItem("startTime");
+        let startTime = new Date().getTime() + count * 1000; // Get the start time in milliseconds
+        if (storedStartTime) {
+          startTime = parseInt(storedStartTime, 10);
+          count = Math.floor((startTime - new Date().getTime()) / 1000);
+          if (count < 0) {
+            count = 0;
+          }
+        }
+
+        intervalId = setInterval(() => {
+          const minutesLeft = Math.floor(count / 60);
+          const secondsLeft = count % 60;
+          const timeString = `${minutesLeft}:${
+            secondsLeft < 10 ? "0" : ""
+          }${secondsLeft}`; // Display the time in MM:SS format
+
+          localStorage.setItem("counter", timeString); // Store the counter value in localStorage
+          localStorage.setItem("startTime", startTime);
+
+          count--;
+
+          if (count < 0) {
+            clearInterval(intervalId); // Stop the interval when the countdown reaches zero
+            localStorage.setItem("allow", true);
+            localStorage.removeItem("counter");
+            localStorage.removeItem("startTime");
+            localStorage.removeItem("currentLocal");
+            // Remove the counter value from localStorage when the countdown stops
+          }
+        }, 1000); // Increment the count every 1 second (1000 milliseconds)
+
+        localStorage.setItem("intervalId", intervalId);
+        // Store the intervalId value in localStorage
+
+        // Display the start time in reverse order
+
+        window.addEventListener("beforeunload", (event) => {
+          if (count > 0) {
+            event.preventDefault();
+            localStorage.setItem(
+              "currentLocal",
+              JSON.stringify({ count, startTime })
+            );
+          } else {
+            localStorage.removeItem("counter");
+            localStorage.removeItem("startTime");
+            localStorage.removeItem("currentLocal");
+          }
+        });
+
+        window.addEventListener("load", (event) => {
+          const storedLocal = localStorage.getItem("currentLocal");
+          if (storedLocal && !allow) {
+            const { count: storedCount, startTime: storedStartTime } =
+              JSON.parse(storedLocal);
+            localStorage.removeItem("currentLocal");
+            localStorage.setItem("startTime", storedStartTime);
+            const remainingTime = Math.floor(
+              (storedStartTime - new Date().getTime()) / 1000
+            );
+            count = storedCount + remainingTime;
+            if (count < 0) {
+              count = 0;
+            }
+            startTime = storedStartTime;
+          }
+        });
+      }
+
+      function saveQuizProgress(payload) {
+        const url = "http://demo.tecjaunt.com/api/save-quiz-progress";
+        const reponse = fetch(url, {
+          method: "POST", // *GET, POST, PUT, DELETE, etc.
+          headers: headers,
+          body: JSON.stringify(payload),
+        })
+          .then((response) => {
+            return response.json(); // Return the Promise
+          })
+          .then((data) => {})
+          .catch((error) => console.log("Error:", error));
+      }
+      function saveProgress(payload) {
+        const headers = {
+          "Content-Type": "application/json",
+          // Add other headers if required
+        };
+        const url = "http://demo.tecjaunt.com/api/save-school-chapter-progress";
+
+        return fetch(url, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(payload),
+        })
+          .then((response) => {
+            response.json();
+          })
+          .catch((error) => console.log("Error:", error));
+      }
+    </script>
+  </body>
+</html>

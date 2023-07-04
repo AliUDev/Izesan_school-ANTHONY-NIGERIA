@@ -1,0 +1,71 @@
+.loginform_input{
+    width: 70%;
+}
+.loginform_input_parent{
+    /* margin-bottom: 10px; */
+    text-align: center;
+}
+.login_inputs_columns{
+    margin-top: 30px;
+    /* padding: 60px 0; */
+    /* backdrop-filter: blur(3px); */
+    /* border: 1px solid gray; */
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.055);
+}
+.second_column{
+    /* height: 490px; */
+    border-radius: 10px;
+}
+.login_parent_row{
+    width: 60%;
+}
+.login_description{
+    text-align: start;
+}
+.forgot_password_style{
+    width: 70%;
+}
+.login_button{
+    width: 70%;
+}
+.create_new_school_link{
+    font-size: 1.4rem;
+}
+@media( max-width: 767px){
+
+    .first_column{
+        height: 0px;
+    }
+    .login_inputs_columns{
+        margin-top: 0px;
+        padding: 10px;
+    }
+    .second_column{
+        height: auto;
+        border: 0;
+    }
+    .loginform_input{
+        width: 100%;
+    }
+    .login_inputs_columns{
+        padding: 0;
+    }
+    .login_parent_row{
+        padding: 0 5px;
+        width: 95%;
+    }
+    .login_description{
+        font-size: 12.5px;
+    }
+    .forgot_password_style{
+        width: 95%;
+        font-size: 12.5px;
+    }
+    .login_button{
+        width: 100%;
+    }
+    .create_new_school_link{
+        font-size: 1rem;
+    }
+}
